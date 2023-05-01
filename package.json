@@ -1,0 +1,30 @@
+{
+  "name": "moralis-money-discord-bot",
+  "version": "1.0.0",
+  "description": "Discord bot to moderate moralis money discord",
+  "main": "index.js",
+  "scripts": {
+    "start": "pm2-runtime start build/index.js ",
+    "dev": "tsc && concurrently -k \"tsc -w\" \"pm2-runtime start build/index.js --watch --name my-app\"",
+    "prestart": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JohnVersus/moralis-money-discord-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JohnVersus/moralis-money-discord-bot/issues"
+  },
+  "homepage": "https://github.com/JohnVersus/moralis-money-discord-bot#readme",
+  "devDependencies": {
+    "prisma": "^4.13.0",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.13.0",
+    "discord.js": "^14.9.0",
+    "dotenv": "^16.0.3"
+  }
+}
