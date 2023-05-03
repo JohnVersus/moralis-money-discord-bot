@@ -17,7 +17,7 @@ export const verificationEmbed = new EmbedBuilder()
   )
   .addFields(
     {
-      name: "1. React to this message",
+      name: "1. Verification",
       value: "Click on the below button to verify.",
     },
     {

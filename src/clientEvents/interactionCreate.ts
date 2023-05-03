@@ -100,6 +100,11 @@ export const interationEvent = async (interaction: Interaction) => {
       // Verify the user and get the result
       try {
         const result = await verifyUser(interaction, userInput);
+        // Acknowledge the modal submission and close it
+        await interaction.followUp({
+          content: "Verification request is processing.",
+          ephemeral: true,
+        });
 
         // Post the verification status in the bot logs channel
         const botLogsChannel = interaction.guild?.channels.cache.find(
@@ -108,15 +113,10 @@ export const interationEvent = async (interaction: Interaction) => {
 
         if (botLogsChannel) {
           await botLogsChannel.send(
-            `${result.message} (User ID: <@${interaction.user.id}>)`
+            `${result.message} (User ID: <@${interaction.user.id}>) \n\`MM Id: ${userInput}\``
           );
         }
 
-        // Acknowledge the modal submission and close it
-        await interaction.followUp({
-          content: "Verification request is processing.",
-          ephemeral: true,
-        });
         await interaction.followUp({
           content: result.message,
           ephemeral: true,

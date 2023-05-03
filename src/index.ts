@@ -4,6 +4,7 @@ import { Client, GatewayIntentBits, Routes } from "discord.js";
 import { REST } from "@discordjs/rest";
 import postEmbed from "./commands/postEmbed";
 import { interationEvent } from "./clientEvents/interactionCreate";
+import { checkProStatus } from "./utils/checkProStatus";
 
 const { TOKEN, CLIENT_ID, GUILD_ID } = process.env;
 
@@ -22,15 +23,15 @@ const wait = require("node:timers/promises").setTimeout;
 
 client.on("interactionCreate", interationEvent);
 
+setInterval(() => {
+  client.guilds.cache.forEach((guild) => {
+    checkProStatus(guild);
+  });
+}, 60 * 1000 * 60 * 24);
+
 async function main() {
   // remove test commands after launce
-  const commands = [
-    postEmbed,
-    {
-      name: "test app command",
-      type: 3,
-    },
-  ];
+  const commands = [postEmbed];
   try {
     console.log("Started refreshing application (/) commands.");
     if (!CLIENT_ID || !GUILD_ID) {

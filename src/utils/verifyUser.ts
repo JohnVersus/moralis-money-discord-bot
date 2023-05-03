@@ -38,7 +38,8 @@ export async function verifyUser(interaction: Interaction, secretId: string) {
   if (!isValidSecret) {
     return {
       success: false,
-      message: "Invalid secret ID provided or not a pro plan.",
+      message:
+        "Invalid secret ID provided or not a pro plan user. Contact moderators if it is a mistake.",
     };
   }
 
