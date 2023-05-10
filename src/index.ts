@@ -5,6 +5,7 @@ import { REST } from "@discordjs/rest";
 import postEmbed from "./commands/postEmbed";
 import { interationEvent } from "./clientEvents/interactionCreate";
 import { checkProStatus } from "./utils/checkProStatus";
+import { guildMemberRemoveEvent } from "./clientEvents/guildMemberRemove";
 
 const { TOKEN, CLIENT_ID, GUILD_ID } = process.env;
 
@@ -13,6 +14,7 @@ export const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers,
   ],
 });
 if (!TOKEN) {
@@ -22,6 +24,8 @@ const rest = new REST({ version: "10" }).setToken(TOKEN);
 const wait = require("node:timers/promises").setTimeout;
 
 client.on("interactionCreate", interationEvent);
+
+client.on("guildMemberRemove", guildMemberRemoveEvent);
 
 setInterval(() => {
   client.guilds.cache.forEach((guild) => {
