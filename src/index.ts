@@ -6,6 +6,7 @@ import postEmbed from "./commands/postEmbed";
 import { interationEvent } from "./clientEvents/interactionCreate";
 import { checkProStatus } from "./utils/checkProStatus";
 import { guildMemberRemoveEvent } from "./clientEvents/guildMemberRemove";
+import { messageCreateEvent } from "./clientEvents/messageCreate";
 
 const { TOKEN, CLIENT_ID, GUILD_ID } = process.env;
 
@@ -26,6 +27,8 @@ const wait = require("node:timers/promises").setTimeout;
 client.on("interactionCreate", interationEvent);
 
 client.on("guildMemberRemove", guildMemberRemoveEvent);
+
+client.on("messageCreate", messageCreateEvent);
 
 setInterval(() => {
   client.guilds.cache.forEach((guild) => {

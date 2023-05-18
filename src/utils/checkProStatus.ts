@@ -69,6 +69,13 @@ export async function checkProStatus(guild: Guild) {
               `User <@${discordId}> has been removed from the 'pro' role. \n\`MM Id: ${userPlanInfo.moneyId}\` \n\`Reason: Plan Expired\``
             );
 
+            // Send DM to the user
+            member.user
+              .send(
+                `Your access to Moralis money pro discord server has been removed due to expired plan on your MM Id: ${userPlanInfo.moneyId}. Please email money@moralis.io to help you restore your subscription.`
+              )
+              .catch(console.error);
+
             // Remove the user from the database
             await prisma.userVerification.delete({
               where: { discordId },
