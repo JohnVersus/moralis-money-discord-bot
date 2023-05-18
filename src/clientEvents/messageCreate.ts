@@ -4,7 +4,10 @@ import sendToSlack from "../utils/sendToSlack";
 
 export const messageCreateEvent = async (message: Message) => {
   // Check if the message is in the feedback channel
-  if ((message.channel as PublicThreadChannel).parent?.name === "🤕-feedback") {
+  if (
+    (message.channel as PublicThreadChannel).id === message.id &&
+    (message.channel as PublicThreadChannel).parent?.name === "🤕-feedback"
+  ) {
     // Get the message text and author
     const description = `${message.content}`;
     // Extract any images from the message
