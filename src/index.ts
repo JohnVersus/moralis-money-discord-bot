@@ -7,6 +7,7 @@ import { interationEvent } from "./clientEvents/interactionCreate";
 import { checkProStatus } from "./utils/checkProStatus";
 import { guildMemberRemoveEvent } from "./clientEvents/guildMemberRemove";
 import { messageCreateEvent } from "./clientEvents/messageCreate";
+import { threadUpdateEvent } from "./clientEvents/threadUpdate";
 
 const { TOKEN, CLIENT_ID, GUILD_ID } = process.env;
 
@@ -29,6 +30,8 @@ client.on("interactionCreate", interationEvent);
 client.on("guildMemberRemove", guildMemberRemoveEvent);
 
 client.on("messageCreate", messageCreateEvent);
+
+client.on("threadUpdate", threadUpdateEvent);
 
 setInterval(() => {
   client.guilds.cache.forEach((guild) => {

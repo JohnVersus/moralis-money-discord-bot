@@ -1,4 +1,3 @@
-// postEmbed.ts
 import { SlashCommandBuilder } from "@discordjs/builders";
 
 const postEmbed = new SlashCommandBuilder()
@@ -11,7 +10,8 @@ const postEmbed = new SlashCommandBuilder()
       .setRequired(true)
       .addChoices(
         { name: "Rules", value: "rules" },
-        { name: "Verification", value: "verification" }
+        { name: "Verification", value: "verification" },
+        { name: "Review", value: "review" }
       )
   );
 

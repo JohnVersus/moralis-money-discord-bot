@@ -21,3 +21,14 @@ model UserVerification {
   mmId  String   @unique
   createdAt DateTime @default(now())
 }
+
+model Review {
+  id             Int      @id @default(autoincrement())
+  discordId      String   @unique // Discord ID of the user
+  firstRating    Int?      // Rating of the first aspect
+  secondRating   Int?      // Rating of the second aspect
+  detailedReview String?  // Detailed review from the user
+  createdAt      DateTime @default(now())
+  lastReviewed   DateTime? // The date of the last review
+}
+
