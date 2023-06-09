@@ -18,10 +18,15 @@ export const verificationEmbed = new EmbedBuilder()
   .addFields(
     {
       name: "1. Verification",
-      value: "Click on the below button to verify.",
+      value: "Click on the below button to start the verification.",
     },
     {
-      name: "2. Enjoy the server",
+      name: "2. Enter Moralis money Id",
+      value:
+        "You can find your Moralis money Id at https://moralismoney.com/account",
+    },
+    {
+      name: "3. Enjoy the server",
       value: "After verifying, you will have access to all available channels.",
     }
   );
