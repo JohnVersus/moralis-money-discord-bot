@@ -50,7 +50,9 @@ export async function checkProStatus(guild: Guild) {
   // Check each user for a missing 'pro' string or a 'free' string in their plan
   for (const userPlanInfo of responseData) {
     const isFreeUser =
-      !userPlanInfo.plan.includes("pro") || userPlanInfo.plan.includes("free");
+      !userPlanInfo.plan.includes("pro") ||
+      !userPlanInfo.plan.includes("staff") ||
+      userPlanInfo.plan.includes("free");
 
     if (isFreeUser) {
       freeUsersCount++;
