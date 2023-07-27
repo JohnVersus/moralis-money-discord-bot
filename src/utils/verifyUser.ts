@@ -34,7 +34,12 @@ export async function verifyUser(interaction: Interaction, secretId: string) {
 
   const responseData = await response.json();
   const userPlanInfo = responseData[0];
-  const isValidSecret = userPlanInfo && userPlanInfo.plan.includes("pro");
+  const isValidSecret =
+    userPlanInfo &&
+    (userPlanInfo.plan.includes("pro") ||
+      userPlanInfo.plan.includes("staff") ||
+      userPlanInfo.plan.includes("enterprise"));
+
   if (!isValidSecret) {
     return {
       success: false,
@@ -52,7 +57,7 @@ export async function verifyUser(interaction: Interaction, secretId: string) {
     return {
       success: false,
       message:
-        "User is already verified with with MM Id. Contact Moderators if it is a mistake.",
+        "User is already verified with this MM Id. Contact Moderators if it is a mistake.",
     };
   }
 

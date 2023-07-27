@@ -51,7 +51,8 @@ export async function checkProStatus(guild: Guild) {
   for (const userPlanInfo of responseData) {
     const isFreeUser =
       !userPlanInfo.plan.includes("pro") &&
-      !userPlanInfo.plan.includes("staff");
+      !userPlanInfo.plan.includes("staff") &&
+      !userPlanInfo.plan.includes("enterprise");
 
     if (isFreeUser) {
       freeUsersCount++;
