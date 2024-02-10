@@ -99,6 +99,7 @@ export const interationEvent = async (interaction: Interaction) => {
         });
       }
     } else if (interaction.commandName === "removeuser") {
+      await interaction.deferReply({ ephemeral: true });
       const user = interaction.options.getUser("user", true);
       const botchannel = interaction.guild?.channels.cache.find(
         (ch) => ch.name === botLogsChannel
@@ -128,6 +129,10 @@ export const interationEvent = async (interaction: Interaction) => {
             await botchannel.send(
               `Pro access of <@${user.id}> has been removed.`
             );
+          } else {
+            await botchannel.send(
+              `<@${user.id}> is not found in the server or did not have a pro role.`
+            );
           }
 
           // Delete the user's record from the database
@@ -135,19 +140,24 @@ export const interationEvent = async (interaction: Interaction) => {
             where: { discordId: user.id },
           });
           await botchannel.send(
-            `${userVerification.mmId} has been removed from the database.`
+            `\`${userVerification.mmId}\` has been removed from the database.`
           );
         } else {
           await botchannel.send(
-            `No verification found for user <@${user.id}>.`
+            `MM Id of user <@${user.id}> is not found in the database.`
           );
         }
       } catch (error) {
         console.error("Error resetting user:", error);
         await botchannel.send(
-          `Error resetting user <@${user.id}>: ${(error as Error).message}`
+          `Error removing the pro access of user <@${user.id}>: ${
+            (error as Error).message
+          }`
         );
       }
+      await interaction.editReply({
+        content: "Process is complete. Check the logs for more details.",
+      });
     }
 
     // Handle other slash commands here
