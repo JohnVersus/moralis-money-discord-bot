@@ -3,6 +3,7 @@ config();
 import { Client, GatewayIntentBits, Routes } from "discord.js";
 import { REST } from "@discordjs/rest";
 import postEmbed from "./commands/postEmbed";
+import resetUser from "./commands/resetUser";
 import { interationEvent } from "./clientEvents/interactionCreate";
 import { checkProStatus } from "./utils/checkProStatus";
 import { guildMemberRemoveEvent } from "./clientEvents/guildMemberRemove";
@@ -41,7 +42,7 @@ setInterval(() => {
 
 async function main() {
   // remove test commands after launce
-  const commands = [postEmbed];
+  const commands = [postEmbed, resetUser];
   try {
     console.log("Started refreshing application (/) commands.");
     if (!CLIENT_ID || !GUILD_ID) {

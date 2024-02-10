@@ -128,3 +128,6 @@ dist
 
 # extras
 build
+.DS_Store
+
+test.js

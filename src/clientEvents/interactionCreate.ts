@@ -98,6 +98,56 @@ export const interationEvent = async (interaction: Interaction) => {
           ephemeral: true,
         });
       }
+    } else if (interaction.commandName === "removeuser") {
+      const user = interaction.options.getUser("user", true);
+      const botchannel = interaction.guild?.channels.cache.find(
+        (ch) => ch.name === botLogsChannel
+      );
+      if (!(botchannel instanceof TextChannel)) {
+        await interaction.reply({
+          content: "Error occured at channel for porcessing the removal.",
+          ephemeral: true,
+        });
+        return;
+      }
+      try {
+        // Find the mmId from the database using the Discord ID
+        const userVerification = await prisma.userVerification.findUnique({
+          where: { discordId: user.id },
+        });
+
+        if (userVerification) {
+          // Remove the "pro" role from the user
+          const proRole = interaction.guild?.roles.cache.find(
+            (role) => role.name === "pro"
+          );
+          const member = await interaction.guild?.members.fetch(user.id);
+
+          if (proRole && member?.roles.cache.has(proRole.id)) {
+            await member.roles.remove(proRole);
+            await botchannel.send(
+              `Pro access of <@${user.id}> has been removed.`
+            );
+          }
+
+          // Delete the user's record from the database
+          await prisma.userVerification.delete({
+            where: { discordId: user.id },
+          });
+          await botchannel.send(
+            `${userVerification.mmId} has been removed from the database.`
+          );
+        } else {
+          await botchannel.send(
+            `No verification found for user <@${user.id}>.`
+          );
+        }
+      } catch (error) {
+        console.error("Error resetting user:", error);
+        await botchannel.send(
+          `Error resetting user <@${user.id}>: ${(error as Error).message}`
+        );
+      }
     }
 
     // Handle other slash commands here
