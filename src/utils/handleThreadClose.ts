@@ -25,7 +25,7 @@ async function handleThreadClose(threadChannel: ThreadChannel) {
 
   // Extract the user ID from the first system message
   if (firstSystemMessage) {
-    console.log({ firstSystemMessage });
+    // console.log({ firstSystemMessage });
     const userId = firstSystemMessage.mentions.users.first()?.id;
     console.log(`Original poster ID: ${userId}`);
     if (userId) {

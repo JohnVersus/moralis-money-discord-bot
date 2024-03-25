@@ -9,6 +9,7 @@ import { checkProStatus } from "./utils/checkProStatus";
 import { guildMemberRemoveEvent } from "./clientEvents/guildMemberRemove";
 import { messageCreateEvent } from "./clientEvents/messageCreate";
 import { threadUpdateEvent } from "./clientEvents/threadUpdate";
+import createThreads from "./commands/createthreads";
 
 const { TOKEN, CLIENT_ID, GUILD_ID } = process.env;
 
@@ -42,7 +43,7 @@ setInterval(() => {
 
 async function main() {
   // remove test commands after launce
-  const commands = [postEmbed, resetUser];
+  const commands = [postEmbed, resetUser, createThreads];
   try {
     console.log("Started refreshing application (/) commands.");
     if (!CLIENT_ID || !GUILD_ID) {

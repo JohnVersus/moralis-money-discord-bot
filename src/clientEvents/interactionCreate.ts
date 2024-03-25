@@ -8,6 +8,8 @@ import {
   APIActionRowComponent,
   APIMessageActionRowComponent,
   CacheType,
+  Channel,
+  GuildMemberRoleManager,
   TextChannel,
   codeBlock,
 } from "discord.js";
@@ -158,18 +160,91 @@ export const interationEvent = async (interaction: Interaction) => {
       await interaction.editReply({
         content: "Process is complete. Check the logs for more details.",
       });
+    } else if (interaction.commandName === "createthreads") {
+      // Correctly extract options from the command
+      await interaction.deferReply({ ephemeral: true });
+      const numberOfThreads = interaction.options.get("number");
+      const suffix = interaction.options.get("suffix");
+      console.log(numberOfThreads?.value, suffix?.value);
+      const channelName = "🎫-open-a-ticket";
+
+      // Find the channel by name
+      const channel = interaction.guild?.channels.cache.find(
+        (c) => c.name === channelName && (c as Channel).isTextBased()
+      );
+
+      if (!channel || !(channel instanceof TextChannel)) {
+        await interaction.reply({
+          content: `Channel "${channelName}" not found or doesn't support threads.`,
+          ephemeral: true,
+        });
+        return;
+      }
+
+      // Loop and create threads
+      for (let i = 1; i <= (numberOfThreads?.value as unknown as number); i++) {
+        try {
+          const thread = await channel.threads.create({
+            name: `ticket-${i} - ${suffix?.value}`,
+            autoArchiveDuration: 10080, // Set to 7 days
+            reason: `Ticket Thread ${i}`,
+          });
+
+          // Delete the system message about the thread creation
+          const systemMessage = await thread.fetchStarterMessage();
+          if (systemMessage) {
+            await systemMessage.delete();
+          }
+
+          // Post and delete the message to add mod users
+          const message = await thread.send({
+            content:
+              "<@859421814177923105> <@208898272637485057> <@859421814177923105> <@1088269918564270131> <@940209372531937291> <@769173957366120518> <@419162461585932290>", // Replace with actual user IDs
+          });
+          await message.delete();
+
+          console.log(`Created thread: ${thread.name}`);
+        } catch (error) {
+          console.error(`Error creating thread: ${error}`);
+          await interaction.editReply({
+            content: `Error creating threads.`,
+          });
+          return;
+        }
+      }
+
+      // Confirm thread creation to the user who initiated the command
+      await interaction.editReply({
+        content: `Created ${numberOfThreads?.value} threads with suffix "${suffix?.value}".`,
+      });
     }
 
     // Handle other slash commands here
   }
   if (interaction.isButton()) {
     if (interaction.customId === "start_verification") {
-      // Create the modal and open it
+      // Fetch the member from the interaction
+      const member = interaction.member;
 
-      interaction.showModal(verificationModal);
+      // Check if the member has the "pro" role by name
+      // Adjust 'pro' to match the exact case and spelling of the role name in your server
+      const hasProRole = (member?.roles as GuildMemberRoleManager).cache.some(
+        (role) => role.name === "pro"
+      );
 
-      // Acknowledge the button interaction
-      // await interaction.deferUpdate();
+      if (hasProRole) {
+        // User has the "pro" role, send an ephemeral message to let them know they are already verified
+        await interaction.reply({
+          content: "You are already verified!",
+          ephemeral: true,
+        });
+      } else {
+        // User does not have the "pro" role, proceed with verification
+        interaction.showModal(verificationModal);
+
+        // Acknowledge the button interaction if necessary
+        // await interaction.deferUpdate();
+      }
     } else if (interaction.customId === "start_review") {
       const lastReview = await prisma.review.findUnique({
         where: { discordId: interaction.user.id },
