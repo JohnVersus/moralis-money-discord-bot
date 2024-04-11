@@ -9,6 +9,7 @@ import {
   APIMessageActionRowComponent,
   CacheType,
   Channel,
+  ChannelType,
   GuildMemberRoleManager,
   TextChannel,
   codeBlock,
@@ -108,7 +109,7 @@ export const interationEvent = async (interaction: Interaction) => {
       );
       if (!(botchannel instanceof TextChannel)) {
         await interaction.reply({
-          content: "Error occured at channel for porcessing the removal.",
+          content: "Error occurred at channel for processing the removal.",
           ephemeral: true,
         });
         return;
@@ -120,24 +121,26 @@ export const interationEvent = async (interaction: Interaction) => {
         });
 
         if (userVerification) {
-          // Remove the "pro" role from the user
+          // Remove the "pro" role from the user if they are in the guild
           const proRole = interaction.guild?.roles.cache.find(
             (role) => role.name === "pro"
           );
-          const member = await interaction.guild?.members.fetch(user.id);
 
-          if (proRole && member?.roles.cache.has(proRole.id)) {
-            await member.roles.remove(proRole);
-            await botchannel.send(
-              `Pro access of <@${user.id}> has been removed.`
-            );
-          } else {
+          try {
+            const member = await interaction.guild?.members.fetch(user.id);
+            if (proRole && member?.roles.cache.has(proRole.id)) {
+              await member.roles.remove(proRole);
+              await botchannel.send(
+                `Pro access of <@${user.id}> has been removed.`
+              );
+            }
+          } catch (fetchError) {
             await botchannel.send(
               `<@${user.id}> is not found in the server or did not have a pro role.`
             );
           }
 
-          // Delete the user's record from the database
+          // Delete the user's record from the database regardless of their guild membership status
           await prisma.userVerification.delete({
             where: { discordId: user.id },
           });
@@ -188,18 +191,19 @@ export const interationEvent = async (interaction: Interaction) => {
             name: `ticket-${i} - ${suffix?.value}`,
             autoArchiveDuration: 10080, // Set to 7 days
             reason: `Ticket Thread ${i}`,
+            type: ChannelType.PrivateThread,
           });
 
           // Delete the system message about the thread creation
-          const systemMessage = await thread.fetchStarterMessage();
-          if (systemMessage) {
-            await systemMessage.delete();
-          }
+          // const systemMessage = await thread.fetchStarterMessage();
+          // if (systemMessage) {
+          //   await systemMessage.delete();
+          // }
 
           // Post and delete the message to add mod users
           const message = await thread.send({
             content:
-              "<@859421814177923105> <@208898272637485057> <@859421814177923105> <@1088269918564270131> <@940209372531937291> <@769173957366120518> <@419162461585932290>", // Replace with actual user IDs
+              "<@859421814177923105> <@208898272637485057> <@894658368789168149> <@1088269918564270131> <@940209372531937291> <@769173957366120518> <@419162461585932290>", // Replace with actual user IDs
           });
           await message.delete();
 

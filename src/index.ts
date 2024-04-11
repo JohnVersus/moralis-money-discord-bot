@@ -10,6 +10,7 @@ import { guildMemberRemoveEvent } from "./clientEvents/guildMemberRemove";
 import { messageCreateEvent } from "./clientEvents/messageCreate";
 import { threadUpdateEvent } from "./clientEvents/threadUpdate";
 import createThreads from "./commands/createthreads";
+import { postDataToDiscord } from "./utils/BackupToDiscord";
 
 const { TOKEN, CLIENT_ID, GUILD_ID } = process.env;
 
@@ -36,8 +37,9 @@ client.on("messageCreate", messageCreateEvent);
 client.on("threadUpdate", threadUpdateEvent);
 
 setInterval(() => {
-  client.guilds.cache.forEach((guild) => {
-    checkProStatus(guild);
+  client.guilds.cache.forEach(async (guild) => {
+    await checkProStatus(guild);
+    await postDataToDiscord(client);
   });
 }, 60 * 1000 * 60 * 24);
 
