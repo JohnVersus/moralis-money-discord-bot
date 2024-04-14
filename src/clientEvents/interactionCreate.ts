@@ -10,6 +10,7 @@ import {
   CacheType,
   Channel,
   ChannelType,
+  GuildMember,
   GuildMemberRoleManager,
   TextChannel,
   codeBlock,
@@ -221,6 +222,92 @@ export const interationEvent = async (interaction: Interaction) => {
       await interaction.editReply({
         content: `Created ${numberOfThreads?.value} threads with suffix "${suffix?.value}".`,
       });
+    } else if (interaction.commandName === "pinmessage") {
+      await interaction.deferReply({ ephemeral: true });
+
+      // Get the message URL from the command options
+      const messageUrlOption = interaction.options.get("message_link", true);
+      const messageUrl = messageUrlOption.value as string;
+      const urlParts = messageUrl.split("/").slice(-2);
+      const channelID = urlParts[0];
+      const messageID = urlParts[1];
+
+      // Check if the user has the 📌 role
+      const member = interaction.member as GuildMember;
+      if (!member.roles.cache.some((role) => role.name === "📌")) {
+        await interaction.editReply({
+          content: "You do not have permission to pin messages.",
+        });
+        return;
+      }
+
+      try {
+        const textChannel = (await interaction.guild?.channels.fetch(
+          channelID
+        )) as TextChannel;
+        const message = await textChannel.messages.fetch(messageID);
+        await message.pin();
+        await interaction.editReply({
+          content: "Message pinned successfully!",
+        });
+
+        // Log the event in the bot logs channel
+        const botchannel = interaction.guild?.channels.cache.find(
+          (ch) => ch.name === botLogsChannel
+        );
+        if (botchannel) {
+          await (botchannel as TextChannel).send(
+            `<@${member.user.id}> pinned a message: ${messageUrl}`
+          );
+        }
+      } catch (error) {
+        await interaction.editReply({
+          content: `An error occurred: ${error}`,
+        });
+      }
+    } else if (interaction.commandName === "unpinmessage") {
+      await interaction.deferReply({ ephemeral: true });
+
+      // Get the message URL from the command options
+      const messageUrlOption = interaction.options.get("message_link", true);
+      const messageUrl = messageUrlOption.value as string;
+      const urlParts = messageUrl.split("/").slice(-2);
+      const channelID = urlParts[0];
+      const messageID = urlParts[1];
+
+      // Check if the user has the 📌 role
+      const member = interaction.member as GuildMember;
+      if (!member.roles.cache.some((role) => role.name === "📌")) {
+        await interaction.editReply({
+          content: "You do not have permission to unpin messages.",
+        });
+        return;
+      }
+
+      try {
+        const textChannel = (await interaction.guild?.channels.fetch(
+          channelID
+        )) as TextChannel;
+        const message = await textChannel.messages.fetch(messageID);
+        await message.unpin();
+        await interaction.editReply({
+          content: "Message unpinned successfully!",
+        });
+
+        // Log the event in the bot logs channel
+        const botchannel = interaction.guild?.channels.cache.find(
+          (ch) => ch.name === botLogsChannel
+        );
+        if (botchannel) {
+          await (botchannel as TextChannel).send(
+            `<@${member.user.id}> unpinned a message: ${messageUrl}`
+          );
+        }
+      } catch (error) {
+        await interaction.editReply({
+          content: `An error occurred: ${error}`,
+        });
+      }
     }
 
     // Handle other slash commands here

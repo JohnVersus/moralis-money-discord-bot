@@ -11,6 +11,8 @@ import { messageCreateEvent } from "./clientEvents/messageCreate";
 import { threadUpdateEvent } from "./clientEvents/threadUpdate";
 import createThreads from "./commands/createthreads";
 import { postDataToDiscord } from "./utils/BackupToDiscord";
+import pinMessage from "./commands/pin";
+import unpinMessage from "./commands/unpin";
 
 const { TOKEN, CLIENT_ID, GUILD_ID } = process.env;
 
@@ -45,7 +47,13 @@ setInterval(() => {
 
 async function main() {
   // remove test commands after launce
-  const commands = [postEmbed, resetUser, createThreads];
+  const commands = [
+    postEmbed,
+    resetUser,
+    createThreads,
+    pinMessage,
+    unpinMessage,
+  ];
   try {
     console.log("Started refreshing application (/) commands.");
     if (!CLIENT_ID || !GUILD_ID) {
