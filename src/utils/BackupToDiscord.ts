@@ -1,4 +1,3 @@
-// Import at the top of your script
 import { AttachmentBuilder, Client, TextChannel } from "discord.js";
 import fs from "fs";
 import { PrismaClient } from "@prisma/client";
@@ -10,9 +9,10 @@ async function postDataToDiscord(client: Client) {
   try {
     const userVerifications = await prisma.userVerification.findMany();
     const reviews = await prisma.review.findMany();
+    const threadCounts = await prisma.threadCount.findMany();
 
     const jsonData = JSON.stringify(
-      { userVerifications, reviews },
+      { userVerifications, reviews, threadCounts },
       (key, value) => (typeof value === "bigint" ? value.toString() : value)
     );
     const filePath = "./backup.json";

@@ -32,3 +32,8 @@ model Review {
   lastReviewed   DateTime? // The date of the last review
 }
 
+model ThreadCount {
+  id     Int    @id @default(autoincrement())
+  suffix String
+  count  Int
+}

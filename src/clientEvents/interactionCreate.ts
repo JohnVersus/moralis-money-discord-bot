@@ -169,7 +169,16 @@ export const interationEvent = async (interaction: Interaction) => {
       await interaction.deferReply({ ephemeral: true });
       const numberOfThreads = interaction.options.get("number");
       const suffix = interaction.options.get("suffix");
-      console.log(numberOfThreads?.value, suffix?.value);
+
+      if (!suffix || !numberOfThreads) {
+        await interaction.reply({
+          content: `Theread suffix and count are mising`,
+          ephemeral: true,
+        });
+        return;
+      }
+
+      console.log(numberOfThreads.value, suffix.value);
       const channelName = "🎫-open-a-ticket";
 
       // Find the channel by name
@@ -185,13 +194,35 @@ export const interationEvent = async (interaction: Interaction) => {
         return;
       }
 
-      // Loop and create threads
+      // Retrieve the current count from the database
+      let threadCount;
+      try {
+        threadCount = await prisma.threadCount.findFirst({
+          where: { suffix: suffix.value as string },
+        });
+
+        if (!threadCount) {
+          // If no record found, initialize it
+          threadCount = await prisma.threadCount.create({
+            data: { suffix: suffix.value as string, count: 0 },
+          });
+        }
+      } catch (error) {
+        console.error(`Error retrieving thread count: ${error}`);
+        await interaction.editReply({
+          content: `Error retrieving thread count.`,
+        });
+        return;
+      }
+
+      // Loop and create threads starting from the current count + 1
+      let currentCount = threadCount.count;
       for (let i = 1; i <= (numberOfThreads?.value as unknown as number); i++) {
         try {
           const thread = await channel.threads.create({
-            name: `ticket-${i} - ${suffix?.value}`,
+            name: `ticket-${currentCount + i} - ${suffix?.value}`,
             autoArchiveDuration: 10080, // Set to 7 days
-            reason: `Ticket Thread ${i}`,
+            reason: `Ticket Thread ${currentCount + i}`,
             type: ChannelType.PrivateThread,
           });
 
@@ -216,6 +247,22 @@ export const interationEvent = async (interaction: Interaction) => {
           });
           return;
         }
+      }
+
+      // Update the thread count in the database
+      try {
+        await prisma.threadCount.updateMany({
+          where: { suffix: suffix.value as string },
+          data: {
+            count: currentCount + (numberOfThreads.value as number),
+          },
+        });
+      } catch (error) {
+        console.error(`Error updating thread count: ${error}`);
+        await interaction.editReply({
+          content: `Error updating thread count.`,
+        });
+        return;
       }
 
       // Confirm thread creation to the user who initiated the command
